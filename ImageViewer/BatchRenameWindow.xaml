@@ -1,0 +1,36 @@
+<Window x:Class="ImageViewer.BatchRenameWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="批量重命名" Height="400" Width="600"
+        WindowStartupLocation="CenterOwner">
+    <DockPanel Margin="10">
+        <StackPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+            <TextBlock Text="命名规则：" Margin="0,0,0,5"/>
+            <TextBox x:Name="patternBox" Text="{Binding Pattern}" Margin="0,0,0,5"
+                     ToolTip="使用 {n} 表示序号，例如：IMG_{n}"/>
+            <TextBlock Text="说明：在命名规则中使用 {n} 表示序号，例如：IMG_{n} 将生成 IMG_1, IMG_2..." 
+                      Foreground="Gray" TextWrapping="Wrap"/>
+            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                <TextBlock Text="起始序号：" VerticalAlignment="Center"/>
+                <TextBox x:Name="startNumberBox" Text="{Binding StartNumber}" Width="60" Margin="5,0,0,0"/>
+                <TextBlock Text="序号位数：" VerticalAlignment="Center" Margin="20,0,0,0"/>
+                <TextBox x:Name="digitCountBox" Text="{Binding DigitCount}" Width="60" Margin="5,0,0,0"/>
+            </StackPanel>
+        </StackPanel>
+        
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+            <Button Content="预览" Click="Preview_Click" Width="80" Height="25" Margin="0,0,10,0"/>
+            <Button Content="确定" Click="OK_Click" Width="80" Height="25" Margin="0,0,10,0"/>
+            <Button Content="取消" Click="Cancel_Click" Width="80" Height="25"/>
+        </StackPanel>
+        
+        <ListView x:Name="previewList">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="原文件名" Width="250" DisplayMemberBinding="{Binding OldName}"/>
+                    <GridViewColumn Header="新文件名" Width="250" DisplayMemberBinding="{Binding NewName}"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </DockPanel>
+</Window> 

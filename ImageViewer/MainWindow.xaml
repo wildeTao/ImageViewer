@@ -1,0 +1,241 @@
+﻿<Window x:Class="ImageViewer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:ImageViewer"
+        xmlns:converters="clr-namespace:ImageViewer.Converters"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        Title="Image Viewer" Height="600" Width="1000"
+        WindowState="Maximized">
+    <Window.Resources>
+        <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
+        <converters:AddMarginConverter x:Key="AddMarginConverter"/>
+    </Window.Resources>
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="File">
+                <MenuItem Header="Open" Click="OpenFile_Click"/>
+                <MenuItem Header="Exit" Click="Exit_Click"/>
+            </MenuItem>
+            <MenuItem Header="Edit">
+                <MenuItem Header="Rename" Click="Rename_Click"/>
+                <MenuItem Header="Batch Rename" Click="BatchRename_Click"/>
+            </MenuItem>
+            <MenuItem Header="View">
+                <MenuItem Header="Zoom">
+                    <MenuItem Header="Zoom In" Click="ZoomIn_Click"/>
+                    <MenuItem Header="Zoom Out" Click="ZoomOut_Click"/>
+                    <MenuItem Header="Fit to Window" Click="FitToWindow_Click"/>
+                    <MenuItem Header="Actual Size" Click="ActualSize_Click"/>
+                </MenuItem>
+                <MenuItem Header="Full Screen" Click="FullScreen_Click"/>
+            </MenuItem>
+            <MenuItem Header="Tools">
+                <MenuItem Header="Convert Image Format" Click="ConvertImage_Click"/>
+                <Separator/>
+                <MenuItem Header="Register File Association" Click="RegisterFileAssociation_Click"/>
+                <MenuItem Header="Unregister File Association" Click="UnregisterFileAssociation_Click"/>
+            </MenuItem>
+        </Menu>
+
+        <!-- Toolbar -->
+        <ToolBar DockPanel.Dock="Top">
+            <StackPanel Orientation="Horizontal" Margin="5">
+                <!-- Filename search -->
+                <StackPanel>
+                    <TextBlock Text="Enter filename to search (e.g., IMG or Screenshot)" 
+                             Margin="0,0,0,2" 
+                             Foreground="Gray" 
+                             FontSize="11"/>
+                    <TextBox x:Name="searchBox" 
+                            Width="200" 
+                            Margin="0,0,10,0"
+                            VerticalAlignment="Center"
+                            TextChanged="SearchBox_TextChanged"
+                            ToolTip="Supports partial filename matching, case-insensitive">
+                        <TextBox.Style>
+                            <Style TargetType="TextBox">
+                                <Style.Resources>
+                                    <VisualBrush x:Key="HintBrush" TileMode="None" Opacity="0.5" Stretch="None" AlignmentX="Left">
+                                        <VisualBrush.Visual>
+                                            <TextBlock Text="Enter filename to search..." Foreground="Gray" Margin="5,0,0,0"/>
+                                        </VisualBrush.Visual>
+                                    </VisualBrush>
+                                </Style.Resources>
+                                <Style.Triggers>
+                                    <Trigger Property="Text" Value="{x:Static sys:String.Empty}">
+                                        <Setter Property="Background" Value="{StaticResource HintBrush}"/>
+                                    </Trigger>
+                                    <Trigger Property="Text" Value="{x:Null}">
+                                        <Setter Property="Background" Value="{StaticResource HintBrush}"/>
+                                    </Trigger>
+                                    <Trigger Property="IsKeyboardFocused" Value="True">
+                                        <Setter Property="Background" Value="White"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBox.Style>
+                    </TextBox>
+                </StackPanel>
+
+                <!-- Category filter -->
+                <ComboBox x:Name="categoryComboBox"
+                         Width="120"
+                         Margin="0,0,10,0"
+                         SelectionChanged="CategoryComboBox_SelectionChanged"
+                         ToolTip="Select image category (auto-categorized by filename)">
+                    <ComboBoxItem Content="All"/>
+                    <ComboBoxItem Content="Photos"/>
+                    <ComboBoxItem Content="Screenshots"/>
+                    <ComboBoxItem Content="Others"/>
+                </ComboBox>
+
+                <!-- Find duplicates button -->
+                <Button Content="Find Duplicates" 
+                        Click="FindDuplicates_Click"
+                        Margin="0,0,10,0"
+                        Padding="5,2"
+                        ToolTip="Find and manage duplicate images"/>
+
+                <!-- Image content search -->
+                <Separator/>
+                <DockPanel LastChildFill="True" Width="300">
+                    <TextBlock Text="Image Content Search:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <Button x:Name="searchButton" 
+                            Content="Search" 
+                            DockPanel.Dock="Right" 
+                            Width="60" 
+                            Margin="5,0,0,0"
+                            Click="SearchButton_Click"/>
+                    <TextBox x:Name="imageSearchBox" 
+                             ToolTip="Enter description to search related images"/>
+                </DockPanel>
+            </StackPanel>
+        </ToolBar>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="3"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Folder browser -->
+            <DockPanel Grid.Column="0">
+                <TextBlock DockPanel.Dock="Top" Background="#F0F0F0" Padding="5">Folders</TextBlock>
+                <TreeView x:Name="folderTreeView" SelectedItemChanged="FolderTreeView_SelectedItemChanged"/>
+            </DockPanel>
+
+            <!-- Splitter -->
+            <GridSplitter Grid.Column="1" Width="3" HorizontalAlignment="Center"/>
+
+            <!-- Main display area -->
+            <DockPanel Grid.Column="2">
+                <!-- Current path display -->
+                <TextBlock x:Name="currentPathText" 
+                         DockPanel.Dock="Top" 
+                         Background="#F0F0F0" 
+                         Padding="5"
+                         TextWrapping="Wrap"/>
+
+                <!-- Toolbar -->
+                <ToolBar DockPanel.Dock="Top">
+                    <Button Content="Previous" Click="PreviousImage_Click"/>
+                    <Button Content="Next" Click="NextImage_Click"/>
+                    <Separator/>
+                    <Button Content="Zoom In" Click="ZoomThumbnail_Click" Tag="in"/>
+                    <Button Content="Zoom Out" Click="ZoomThumbnail_Click" Tag="out"/>
+                    <Button Content="Fit" Click="FitThumbnail_Click"/>
+                    <Separator/>
+                    <Button Content="Slideshow" Click="SlideShow_Click"/>
+                </ToolBar>
+
+                <!-- Thumbnail display area -->
+                <ListBox x:Name="thumbnailListBox"
+                        SelectionChanged="ThumbnailListBox_SelectionChanged"
+                        ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        MouseDown="ListBox_MouseDown">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Padding" Value="2"/>
+                            <Setter Property="Margin" Value="2"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                            <Setter Property="Background" Value="Transparent"/>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Width="{Binding DataContext.thumbnailWidth, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource AddMarginConverter}}" 
+                                      Margin="5"
+                                      Opacity="{Binding Opacity}">
+                                <Image Source="{Binding ImageSource}" 
+                                       Width="{Binding DataContext.thumbnailWidth, RelativeSource={RelativeSource AncestorType=Window}}"
+                                       Height="{Binding DataContext.thumbnailHeight, RelativeSource={RelativeSource AncestorType=Window}}"
+                                       Stretch="Uniform"
+                                       PreviewMouseLeftButtonDown="Image_PreviewMouseDown"
+                                       PreviewMouseLeftButtonUp="Image_PreviewMouseUp"
+                                       PreviewKeyDown="Image_PreviewKeyDown"
+                                       PreviewKeyUp="Image_PreviewKeyUp"
+                                       Focusable="True">
+                                    <Image.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Properties" Click="ShowImageProperties_Click"/>
+                                        </ContextMenu>
+                                    </Image.ContextMenu>
+                                </Image>
+                                <Border Background="Transparent" 
+                                        Margin="0,2"
+                                        HorizontalAlignment="Center">
+                                    <Grid x:Name="fileNameGrid">
+                                        <TextBlock x:Name="fileNameText" 
+                                                  Text="{Binding FileName}" 
+                                                  TextWrapping="Wrap"
+                                                  HorizontalAlignment="Center"
+                                                  MouseLeftButtonDown="FileName_MouseLeftButtonDown"
+                                                  Background="Transparent"
+                                                  Padding="2,0">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter Property="Background" Value="#FFEEEEEE"/>
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                        <TextBox x:Name="fileNameEditor"
+                                                Text="{Binding FileName, UpdateSourceTrigger=PropertyChanged}"
+                                                TextWrapping="Wrap"
+                                                MinWidth="50"
+                                                HorizontalAlignment="Center"
+                                                Visibility="Collapsed"
+                                                LostFocus="FileNameEditor_LostFocus"
+                                                KeyDown="FileNameEditor_KeyDown"
+                                                PreviewMouseDown="FileNameEditor_PreviewMouseDown"
+                                                Padding="2,0">
+                                            <TextBox.Style>
+                                                <Style TargetType="TextBox">
+                                                    <Setter Property="Background" Value="#FFFFFF"/>
+                                                    <Setter Property="BorderBrush" Value="#3399FF"/>
+                                                    <Setter Property="BorderThickness" Value="1"/>
+                                                </Style>
+                                            </TextBox.Style>
+                                        </TextBox>
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </Grid>
+    </DockPanel>
+</Window> 

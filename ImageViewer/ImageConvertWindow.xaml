@@ -1,0 +1,112 @@
+<Window x:Class="ImageViewer.ImageConvertWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="图片转换" Height="576" Width="600"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="#F0F0F0">
+    <DockPanel Margin="15">
+        <StackPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+            <!-- 目标格式 -->
+            <GroupBox Header="目标格式" Margin="0,0,0,10" Padding="10">
+                <WrapPanel Margin="10">
+                    <RadioButton Content="JPG" IsChecked="True" x:Name="jpgRadio" Margin="0,0,30,0"/>
+                    <RadioButton Content="PNG" x:Name="pngRadio" Margin="0,0,30,0"/>
+                    <RadioButton Content="BMP" x:Name="bmpRadio" Margin="0,0,30,0"/>
+                    <RadioButton Content="GIF" x:Name="gifRadio"/>
+                </WrapPanel>
+            </GroupBox>
+
+            <!-- 调整大小 -->
+            <GroupBox Header="调整大小" Margin="0,0,0,10" Padding="10">
+                <StackPanel>
+                    <DockPanel Margin="0,5">
+                        <CheckBox Content="限制最大宽度:" 
+                                x:Name="maxWidthCheck" 
+                                VerticalAlignment="Center"
+                                Margin="0,0,10,0"/>
+                        <TextBlock Text="像素" 
+                                DockPanel.Dock="Right" 
+                                VerticalAlignment="Center"
+                                Margin="5,0,0,0"/>
+                        <TextBox x:Name="maxWidthBox" 
+                                Height="25"
+                                IsEnabled="{Binding IsChecked, ElementName=maxWidthCheck}"/>
+                    </DockPanel>
+
+                    <DockPanel Margin="0,10,0,5">
+                        <CheckBox Content="限制最大高度:" 
+                                x:Name="maxHeightCheck" 
+                                VerticalAlignment="Center"
+                                Margin="0,0,10,0"/>
+                        <TextBlock Text="像素" 
+                                DockPanel.Dock="Right" 
+                                VerticalAlignment="Center"
+                                Margin="5,0,0,0"/>
+                        <TextBox x:Name="maxHeightBox" 
+                                Height="25"
+                                IsEnabled="{Binding IsChecked, ElementName=maxHeightCheck}"/>
+                    </DockPanel>
+                </StackPanel>
+            </GroupBox>
+
+            <!-- 保存位置 -->
+            <GroupBox Header="保存位置" Margin="0,0,0,10" Padding="10">
+                <DockPanel Margin="0,5">
+                    <Button Content="浏览..." 
+                            DockPanel.Dock="Right" 
+                            Click="Browse_Click" 
+                            Width="80" 
+                            Height="25"
+                            Margin="10,0,0,0"/>
+                    <TextBox x:Name="savePathBox" Height="25"/>
+                </DockPanel>
+            </GroupBox>
+
+            <!-- 转换进度 -->
+            <GroupBox Header="转换进度" Margin="0,0,0,10" Padding="10">
+                <ProgressBar x:Name="progressBar" 
+                            Height="25" 
+                            Margin="0,5"/>
+            </GroupBox>
+
+            <!-- 提示信息 -->
+            <TextBlock TextWrapping="Wrap" 
+                    Margin="5,0,5,20" 
+                    Foreground="#666666"
+                    FontSize="12">
+                注意：转换后的图片将保持原始比例。如果同时设置了最大宽度和高度，
+                将按照限制条件等比缩放图片。
+            </TextBlock>
+        </StackPanel>
+
+        <!-- 按钮区域 -->
+        <StackPanel DockPanel.Dock="Bottom" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Right">
+            <Button Content="开始转换" 
+                    Width="100" 
+                    Height="35" 
+                    Click="Convert_Click" 
+                    Margin="0,0,10,0"
+                    Background="#2196F3"
+                    Foreground="White"
+                    FontSize="14">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#1976D2"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+            <Button Content="取消" 
+                    Width="80" 
+                    Height="35"
+                    FontSize="14"
+                    Click="Cancel_Click"/>
+        </StackPanel>
+    </DockPanel>
+</Window> 
